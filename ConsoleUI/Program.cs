@@ -12,24 +12,37 @@ namespace ConsoleUI
     {
         static void Main(string[] args)
         {
-            CategoryService categoryService = new CategoryService(new EfCategoryDal());
+            //CategoryService categoryService = new CategoryService(new EfCategoryDal());
 
-            foreach (var cate in categoryService.GetAll())
-            {
-                Console.WriteLine(cate.CategoryName);
-            }
+            //foreach (var cate in categoryService.GetAll())
+            //{
+            //    Console.WriteLine(cate.CategoryName);
+            //}
             
-            ProductManager productManager = new ProductManager(new EfProductDal());
-            foreach (var product in productManager.GetByUnitPrice(50, 100))
+            //ProductManager productManager = new ProductManager(new EfProductDal());
+            //foreach (var product in productManager.GetByUnitPrice(50, 100))
+            //{
+            //    Console.WriteLine(product.ProductName);
+            //}
+
+            
+            ProductManager productManager1 = new ProductManager(new EfProductDal());
+
+            var result = productManager1.GetProductDetails();
+
+            if (result.Success == true)
             {
-                Console.WriteLine(product.ProductName);
+                foreach (var product in result.Data)
+                {
+                    Console.WriteLine(product.ProductName + "/" + product.CategoryName);
+
+                }
+            }
+            else
+            {
+                Console.WriteLine(result.Message);
             }
 
-            ProductManager productManager1 = new ProductManager(new EfProductDal());
-            foreach (var product in productManager1.GetProductDetails())
-            {
-                Console.WriteLine(product.ProductName+"/"+product.CategoryName);
-            }
             Console.WriteLine("Hello World!");
             Console.ReadLine();
         }
