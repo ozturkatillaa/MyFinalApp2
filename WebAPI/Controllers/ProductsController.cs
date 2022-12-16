@@ -1,0 +1,74 @@
+﻿using Business.Abstract;
+using Business.Concrete;
+using DataAccess.Concrete.EntityFramework;
+using Entities.Concrete;
+using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace WebAPI.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+
+    public class ProductsController : ControllerBase
+    {
+        //loosley coupled
+        //naming convention
+        IProductService _productService;
+
+        public ProductsController(IProductService productService)
+        {
+            _productService = productService;
+        }
+
+
+        [HttpGet("getall")]
+        public IActionResult Get()
+        {
+            //return new List<Product>
+            //{
+            //    new Product{ProductId=1,ProductName="elma"},
+            //    new Product{ProductId=2,ProductName="armut"}
+            //};
+
+            //dependency chain
+            //IProductService productService = new ProductManager(new EfProductDal());
+
+            var result = _productService.GetAll();
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+
+            return BadRequest(result);
+        }
+
+        [HttpGet("getbyid")]
+
+        public IActionResult Get(int Id)
+        {
+            var result = _productService.GetById(Id);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
+
+        [HttpPost("add")]
+
+        public IActionResult Post(Product product)
+        {
+            var result = _productService.Add(product);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
+
+    }
+}
