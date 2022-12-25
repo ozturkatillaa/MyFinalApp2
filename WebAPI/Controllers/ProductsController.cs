@@ -27,6 +27,7 @@ namespace WebAPI.Controllers
 
         [HttpGet("getall")]
         public IActionResult Get()
+        //https://localhost:44350/api/products/getall
         {
             //return new List<Product>
             //{
@@ -47,6 +48,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("getbyid")]
+        //https://localhost:44350/api/products/getbyid?id=2
 
         public IActionResult Get(int Id)
         {

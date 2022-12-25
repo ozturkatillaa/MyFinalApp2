@@ -31,8 +31,9 @@ namespace WebAPI
         {
             //baðýmlýlýklarý yazdýk
             services.AddControllers();
-            services.AddSingleton<IProductService, ProductManager>();
-            services.AddSingleton<IProductDal, EfProductDal>();
+            //autofac ile instanace yani interfaceleri atama operasyonlarý için olþuþturdfuk
+            //services.AddSingleton<IProductService, ProductManager>();
+            //services.AddSingleton<IProductDal, EfProductDal>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
