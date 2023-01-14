@@ -1,8 +1,11 @@
 ﻿using Business.Abstract;
+using Business.BusinessAspects.Autofac;
+using Business.CCS;
 using Business.Constants;
 using Business.ValidationRules.FluentValidation;
 using Core.Aspects.Autofac.Validation;
 using Core.CrossCuttingConcerns.Validation;
+using Core.Utilities.Business;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
 using Entities.Concrete;
@@ -10,6 +13,7 @@ using Entities.DTOs;
 using FluentValidation;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Business.Concrete
@@ -17,12 +21,17 @@ namespace Business.Concrete
     public class ProductManager:IProductService
     {
         IProductDal _productDal;
-        public ProductManager(IProductDal productDal)
+        ICategoryService _categoryService;
+        //ILogger _logger;
+        public ProductManager(IProductDal productDal, ICategoryService categoryService) //,ILogger logger)
         {
             _productDal = productDal;
+            _categoryService = categoryService;
+            //_logger = logger;
         }
 
-        [ValidationAspect(typeof(ProductValidator))]
+        [SecuredOperation("product.add,admin")]
+        [ValidationAspect(typeof(ProductValidator))]// validation yerine(3) 3.aşama
         public IResult Add(Product product)
         {
 
@@ -31,15 +40,60 @@ namespace Business.Concrete
             //{
             //    //magic strings
             //    return new ErrorResult(Messages.ProductNameValid);
-            //}
+            //} iften başlayarak buraya kadar ilk(1)
 
 
             //ValidationTool.Validate(new ProductValidator(),product); // BUNUN YERİNE ATTRİBUTE ASPECTS EKLEDİK METHODUN BAŞINDA
+            // validation (2)
+
+            //////////////////////////////////4.aşama üstteki alanı aspectleri aktif ettik atribute olrak burayı yoruma aldık
+            //_logger.Log();
+            //try
+            //{
+            //    _productDal.Add(product);
+
+            //    //return new Result(true,"Eklendi");
+            //    return new SuccessResult(Messages.ProductAdded);
+            //}
+            //catch (Exception exception) 
+            //{
+
+            //    _logger.Log();
+            //}
+            //return new ErrorResult();
+            //-----------------------------------------------------------------------//
+            // aşağıya genel başka işlemler için de geçerli olsun diye private olarak normalde orada bulunan işlemler buradaydı
+            //temiz iş kuralları nasıl yazılır buna biir örnek
+
+            //if (CheckIfProductCountOfCategoryCorrect(product.CategoryId).Success)
+            //{
+            //    if (CheckIfProductNameExists(product.ProductName).Success)
+            //    {
+            //        _productDal.Add(product);
+
+            //        return new SuccessResult(Messages.ProductAdded);
+            //    }
+            //}
+            //return new ErrorResult();
+
+            //--------------------------------------------------------------------------------
+            //business rules olarak IRESULT şeklinde gönderim yapıldığı zaman bu şekilde 6.durum
+            //---------------------------------------------------------------------------------
+            //bunun avantajı yarın yeni kural geldi eklemek kolay olur  
+
+            IResult result = BusinessRules.Run(CheckIfProductCountOfCategoryCorrect(product.CategoryId), CheckIfProductNameExists(product.ProductName)
+                ,CheckIfCategoryLimitExceded());
+
+            if (result != null)
+            {
+                return result;
+            }
 
             _productDal.Add(product);
 
-            //return new Result(true,"Eklendi");
             return new SuccessResult(Messages.ProductAdded);
+
+
         }
 
         public IDataResult<List<Product>> GetAll()
@@ -76,6 +130,52 @@ namespace Business.Concrete
                 return new ErrorDataResult<List<ProductDetailDto>>(Messages.MaintenanceTime);
             }
             return new SuccessDataResult<List<ProductDetailDto>>(_productDal.GetProductDetails());
+        }
+
+        [ValidationAspect(typeof(ProductValidator))]
+        public IResult Update(Product product)
+        {
+            IResult result = BusinessRules.Run(CheckIfProductCountOfCategoryCorrect(product.CategoryId));
+
+            if (result!=null)
+            {
+                return result;
+            }
+
+            _productDal.Add(product);
+
+            return new SuccessResult(Messages.ProductAdded);
+        }
+
+        private IResult CheckIfProductCountOfCategoryCorrect(int categoryId)
+        {
+            var result = _productDal.GetAll(p => p.CategoryId == categoryId).Count;
+            if (result >= 10)
+            {
+                return new ErrorResult(Messages.ProductCountofCategoryError);
+            }
+
+            return new SuccessResult();
+        } 
+        private IResult CheckIfProductNameExists(string productName)
+        {
+            var result = _productDal.GetAll(p => p.ProductName == productName).Any();
+            if (result)
+            {
+                return new ErrorResult(Messages.ProductNameAlreadyExists);
+            }
+
+            return new SuccessResult();
+        }
+
+        private IResult CheckIfCategoryLimitExceded()
+        {
+            var result = _categoryService.GetAll();
+            if (result.Data.Count>15)
+            {
+                return new ErrorResult(Messages.CategoryLimitExceded);
+            }
+            return new SuccessResult();
         }
     }
 }

@@ -1,9 +1,11 @@
 ﻿using Autofac;
 using Autofac.Extras.DynamicProxy;
 using Business.Abstract;
+using Business.CCS;
 using Business.Concrete;
 using Castle.DynamicProxy;
 using Core.Utilities.Interceptors;
+using Core.Utilities.Security.JWT;
 using DataAccess.Abstract;
 using DataAccess.Concrete.EntityFramework;
 using System;
@@ -16,9 +18,20 @@ namespace Business.DependencyResolvers
     {
         protected override void Load(ContainerBuilder builder)
             //single insatance tek bir referans numrarsı verip herkesle paylaşıyor
+            //autofac aşağıdaki yapıyı kullanarak buradaki bağımlılıkları kullanrak new lerini oluşturuyor, bellkete referanslarını oluşturuyor, buna da  reflection deniyor
         {
             builder.RegisterType<ProductManager>().As<IProductService>().SingleInstance();
             builder.RegisterType<EfProductDal>().As<IProductDal>().SingleInstance();
+            //builder.RegisterType<DatabaseLogger>().As<ILogger>().SingleInstance();// eğer drnfrnn aI logger istenirse, Database logger ver
+
+            builder.RegisterType<CategoryService>().As<ICategoryService>().SingleInstance();
+            builder.RegisterType<EfCategoryDal>().As<ICategoryDal>().SingleInstance();
+
+            builder.RegisterType<UserManager>().As<IUserService>();
+            builder.RegisterType<EfUserDal>().As<IUserDal>();
+
+            builder.RegisterType<AuthManager>().As<IAuthService>();
+            builder.RegisterType<JwtHelper>().As<ITokenHelper>();
 
             // aşağıdaki yapuda autofac özelliği amacı aspecti var mı yok mu sorgulaması için
 
