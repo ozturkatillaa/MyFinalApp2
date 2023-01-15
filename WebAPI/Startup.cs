@@ -1,5 +1,7 @@
 using Business.Abstract;
 using Business.Concrete;
+using Core.DependencyResolvers;
+using Core.Extensions;
 using Core.Utilities.IoC;
 using Core.Utilities.Security.Encryption;
 using Core.Utilities.Security.JWT;
@@ -45,7 +47,8 @@ namespace WebAPI
             //api ye JWT kullanacaðýný söyleyen yapý bu
 
             var tokenOptions = Configuration.GetSection("TokenOptions").Get<TokenOptions>();
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            //services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            //DEPENDENCY RESOLVERS, ýoc Icoremodule ile core(framework) katmanýnda bu hale getirdik.
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
@@ -60,7 +63,9 @@ namespace WebAPI
                         IssuerSigningKey = SecurityKeyHelper.CreateSecurityKey(tokenOptions.SecurityKey)
                     };
                 });
-            ServiceTool.Create(services);
+            //ServiceTool.Create(services);
+            services.AddDependencyResolvers(new ICoreModule[] { new CoreModule()});
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

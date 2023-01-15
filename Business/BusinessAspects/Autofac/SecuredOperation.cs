@@ -8,6 +8,8 @@ using Castle.DynamicProxy;
 using Microsoft.Extensions.DependencyInjection;
 using Core.Extensions;
 using Business.Constants;
+using Microsoft.Net.Http.Headers;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace Business.BusinessAspects.Autofac
 {
@@ -27,14 +29,44 @@ namespace Business.BusinessAspects.Autofac
 
 
         //yetkleri gez bak [SecuredOperation("product.add,admin")] 
+        //protected override void OnBefore(IInvocation invocation)
+        //{
+        //    var roleClaims = _httpContextAccessor.HttpContext.User.ClaimRoles();
+        //    foreach (var role in _roles)
+        //    {
+        //        if (roleClaims.Contains(role))
+        //        {
+        //            return;
+        //        }
+        //    }
+        //    throw new Exception(Messages.AuthorizationDenied);
+        //}
+
         protected override void OnBefore(IInvocation invocation)
         {
-            var roleClaims = _httpContextAccessor.HttpContext.User.ClaimRoles();
-            foreach (var role in _roles)
+            //var roleClaims = _httpContextAccessor.HttpContext.User.ClaimRoles();
+            //foreach (var role in _roles)
+            //{
+            //    if (roleClaims.Contains(role))
+            //    {
+            //        return;
+            //    }
+            //}
+            var token = _httpContextAccessor.HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+            if (token != "")
             {
-                if (roleClaims.Contains(role))
+                var handler = new JwtSecurityTokenHandler();
+                var jwtSecurityToken = handler.ReadJwtToken(token);
+                var decodeToken = jwtSecurityToken.Claims;
+                foreach (var claim in decodeToken)
                 {
-                    return;
+                    foreach (var role in _roles)
+                    {
+                        if (claim.ToString().Contains(role))
+                        {
+                            return;
+                        }
+                    }
                 }
             }
             throw new Exception(Messages.AuthorizationDenied);

@@ -99,7 +99,7 @@ namespace Business.Concrete
         public IDataResult<List<Product>> GetAll()
         {
 
-            if (DateTime.Now.Hour==22)
+            if (DateTime.Now.Hour==20)
             {
                 return new ErrorDataResult<List<Product>>(Messages.MaintenanceTime);
 
@@ -125,7 +125,7 @@ namespace Business.Concrete
 
         public IDataResult<List<ProductDetailDto>> GetProductDetails()
         {
-            if (DateTime.Now.Hour == 22)
+            if (DateTime.Now.Hour == 20)
             {
                 return new ErrorDataResult<List<ProductDetailDto>>(Messages.MaintenanceTime);
             }
@@ -149,6 +149,7 @@ namespace Business.Concrete
 
         private IResult CheckIfProductCountOfCategoryCorrect(int categoryId)
         {
+            //id olarak algılıyor "categoryId", 10 dan fazla olmayınca oluyor ("categoryId": 5,) //bir kategoride maksimum 10 ürün olabilir
             var result = _productDal.GetAll(p => p.CategoryId == categoryId).Count;
             if (result >= 10)
             {
