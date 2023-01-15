@@ -6,6 +6,7 @@ namespace Core.Utilities.Security.JWT
 {
     public class TokenOptions
     {
+        //appsteeings içerisindeki alanlar
         public string Audience { get; set; }
         public string Issuer { get; set; }
         public int AccessTokenExpiration { get; set; }

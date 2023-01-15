@@ -22,9 +22,11 @@ namespace Business.BusinessAspects.Autofac
         {
             _roles = roles.Split(',');
             _httpContextAccessor = ServiceTool.ServiceProvider.GetService<IHttpContextAccessor>();
-
+            //_PRODUCTDAL = PRODUCT SERVİCE AUTO FAC ALANINDAKİ GİBİ İNJECTİON YAPMAYA YARAR
         }
 
+
+        //yetkleri gez bak [SecuredOperation("product.add,admin")] 
         protected override void OnBefore(IInvocation invocation)
         {
             var roleClaims = _httpContextAccessor.HttpContext.User.ClaimRoles();

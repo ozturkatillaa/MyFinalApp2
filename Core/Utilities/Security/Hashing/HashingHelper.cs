@@ -6,18 +6,23 @@ namespace Core.Utilities.Security.Hashing
 {
     public class HashingHelper
     {
+        //hashli şifre olulşturmya yarar
         public static void CreatePasswordHash
             (string password, out byte[] passwordHash, out byte[] passwordSalt)
         {
+            //hash oluşturuken hangi algortima
             using (var hmac = new System.Security.Cryptography.HMACSHA512())
             {
+                //tuzlama
                 passwordSalt = hmac.Key;
                 passwordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
+                //hasleme
             }
 
         }
         public static bool VerifyPasswordHash(string password,byte[] passwordHash, byte[] passwordSalt)
         {
+            //doğrularken de aynı algoritma ve doğrularken de daha önce oluşturduğumuz tuzu kullanır
             using (var hmac = new System.Security.Cryptography.HMACSHA512(passwordSalt))
             {
                 var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
