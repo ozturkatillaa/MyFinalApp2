@@ -30,7 +30,7 @@ namespace Business.Concrete
             //_logger = logger;
         }
 
-        [SecuredOperation("product.add,admin")]
+        [SecuredOperation("admin,product.add")]
         [ValidationAspect(typeof(ProductValidator))]// validation yerine(3) 3.aşama
         public IResult Add(Product product)
         {

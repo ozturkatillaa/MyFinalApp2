@@ -29,47 +29,47 @@ namespace Business.BusinessAspects.Autofac
 
 
         //yetkleri gez bak [SecuredOperation("product.add,admin")] 
-        //protected override void OnBefore(IInvocation invocation)
-        //{
-        //    var roleClaims = _httpContextAccessor.HttpContext.User.ClaimRoles();
-        //    foreach (var role in _roles)
-        //    {
-        //        if (roleClaims.Contains(role))
-        //        {
-        //            return;
-        //        }
-        //    }
-        //    throw new Exception(Messages.AuthorizationDenied);
-        //}
-
         protected override void OnBefore(IInvocation invocation)
         {
-            //var roleClaims = _httpContextAccessor.HttpContext.User.ClaimRoles();
-            //foreach (var role in _roles)
-            //{
-            //    if (roleClaims.Contains(role))
-            //    {
-            //        return;
-            //    }
-            //}
-            var token = _httpContextAccessor.HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
-            if (token != "")
+            var roleClaims = _httpContextAccessor.HttpContext.User.ClaimRoles();
+            foreach (var role in _roles)
             {
-                var handler = new JwtSecurityTokenHandler();
-                var jwtSecurityToken = handler.ReadJwtToken(token);
-                var decodeToken = jwtSecurityToken.Claims;
-                foreach (var claim in decodeToken)
+                if (roleClaims.Contains(role))
                 {
-                    foreach (var role in _roles)
-                    {
-                        if (claim.ToString().Contains(role))
-                        {
-                            return;
-                        }
-                    }
+                    return;
                 }
             }
             throw new Exception(Messages.AuthorizationDenied);
         }
+
+        //protected override void OnBefore(IInvocation invocation)
+        //{
+        //    //var roleClaims = _httpContextAccessor.HttpContext.User.ClaimRoles();
+        //    //foreach (var role in _roles)
+        //    //{
+        //    //    if (roleClaims.Contains(role))
+        //    //    {
+        //    //        return;
+        //    //    }
+        //    //}
+        //    var token = _httpContextAccessor.HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", "");
+        //    {
+        //        var handler = new JwtSecurityTokenHandler();
+        //        var jwtSecurityToken = handler.ReadJwtToken(token);
+        //        var decodeToken = jwtSecurityToken.Claims;
+        //        foreach (var claim in decodeToken)
+        //        {
+        //            foreach (var role in _roles)
+        //            {
+        //                if (claim.ToString().Contains(role))
+        //                {
+        //                    return;
+        //                }
+        //            }
+        //        }
+        //    }
+        //    throw new Exception(Messages.AuthorizationDenied);
+        //}
     }
 }
+
