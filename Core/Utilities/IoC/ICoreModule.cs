@@ -7,6 +7,7 @@ namespace Core.Utilities.IoC
 {
     public interface ICoreModule
     {
+        
         //bunun amacı dependency reselvers olan alanları core altında tüm projelerde kullanmak için bu oluşturuldu.
         void Load(IServiceCollection serviceCollection);
     }
