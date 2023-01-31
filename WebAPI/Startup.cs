@@ -43,6 +43,10 @@ namespace WebAPI
             //services.AddSingleton<IProductService, ProductManager>();
             //services.AddSingleton<IProductDal, EfProductDal>();
 
+            //---------------------
+            services.AddCors();
+            //---------------------
+
 
             //api ye JWT kullanacaðýný söyleyen yapý bu
 
@@ -75,6 +79,9 @@ namespace WebAPI
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            //CORS
+            app.UseCors(builder=>builder.WithOrigins("http://localhost:4200").AllowAnyHeader());
 
             app.UseHttpsRedirection();
 

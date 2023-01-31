@@ -111,12 +111,13 @@ namespace Business.Concrete
             return new SuccessDataResult<List<Product>>(_productDal.GetAll(),Messages.ProductListed);
         }
 
-        public IDataResult<List<Product>> GetAllBCategoryId(int id)
+        public IDataResult<List<Product>> GetAllByCategoryId(int id)
         {
             return new SuccessDataResult<List<Product>>(_productDal.GetAll(p => p.CategoryId == id));
         }
 
         [CacheAspect]
+        //[PerformanceAspect(5)]
         public IDataResult<Product> GetById(int ProductId)
         {
             return new SuccessDataResult<Product>(_productDal.Get(p=>p.ProductId==ProductId));
@@ -184,5 +185,16 @@ namespace Business.Concrete
             return new SuccessResult();
         }
 
+        //[TransactionScopeAspect]
+        public IResult AddTransactionalTest(Product product)
+        {
+            Add(product);
+            if (product.UnitPrice < 10)
+            {
+                throw new Exception("");
+            }
+            Add(product);
+            return null;
+        }
     }
 }
