@@ -11,11 +11,11 @@ namespace Business.ValidationRules.FluentValidation
         public ProductValidator()
         {
             RuleFor(p => p.ProductName).NotEmpty();
-            RuleFor(p => p.ProductName).MinimumLength(2);
+            RuleFor(p => p.ProductName).MinimumLength(2).WithMessage("kısa isim");
             RuleFor(p => p.UnitPrice).NotEmpty();
             RuleFor(p => p.UnitPrice).GreaterThan(0);
-            RuleFor(p => p.UnitPrice).GreaterThanOrEqualTo(10).When(p=>p.CategoryId==1);
-            RuleFor(p => p.ProductName).Must(StartWithA);
+            RuleFor(p => p.UnitPrice).GreaterThanOrEqualTo(10).When(p=>p.CategoryId==1).WithMessage("kategri sayısı aşıldı.");
+            RuleFor(p => p.ProductName).Must(StartWithA).WithMessage("urunler a ile başlamalı");
 
         }
 

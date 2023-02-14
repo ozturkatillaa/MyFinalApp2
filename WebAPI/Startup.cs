@@ -80,7 +80,10 @@ namespace WebAPI
                 app.UseDeveloperExceptionPage();
             }
 
-            //CORS
+            //http client atalar görünmesi için try catch(tüm sisteme try-catch koyduk) erro yakalýcyýcý koyduk, core exxtensons içersinde
+            app.ConfigureCustomExceptionMiddleware();
+
+            //CORS lcalhsta client tarafýndaki oeprayosnun ulþamasý için
             app.UseCors(builder=>builder.WithOrigins("http://localhost:4200").AllowAnyHeader());
 
             app.UseHttpsRedirection();
