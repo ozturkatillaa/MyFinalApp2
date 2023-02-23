@@ -151,6 +151,7 @@ namespace Business.Concrete
             return null;
         }
 
+        [CacheRemoveAspect("IProductService.Get")]
         public IResult Delete(Product product)
         {
             _productDal.Delete(product);
