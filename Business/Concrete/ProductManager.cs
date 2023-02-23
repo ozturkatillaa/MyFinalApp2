@@ -37,52 +37,6 @@ namespace Business.Concrete
         public IResult Add(Product product)
         {
 
-            //bunun yerine validationrules koyduk aşağıda
-            //if (product.ProductName.Length<2)
-            //{
-            //    //magic strings
-            //    return new ErrorResult(Messages.ProductNameValid);
-            //} iften başlayarak buraya kadar ilk(1)
-
-
-            //ValidationTool.Validate(new ProductValidator(),product); // BUNUN YERİNE ATTRİBUTE ASPECTS EKLEDİK METHODUN BAŞINDA
-            // validation (2)
-
-            //////////////////////////////////4.aşama üstteki alanı aspectleri aktif ettik atribute olrak burayı yoruma aldık
-            //_logger.Log();
-            //try
-            //{
-            //    _productDal.Add(product);
-
-            //    //return new Result(true,"Eklendi");
-            //    return new SuccessResult(Messages.ProductAdded);
-            //}
-            //catch (Exception exception) 
-            //{
-
-            //    _logger.Log();
-            //}
-            //return new ErrorResult();
-            //-----------------------------------------------------------------------//
-            // aşağıya genel başka işlemler için de geçerli olsun diye private olarak normalde orada bulunan işlemler buradaydı
-            //temiz iş kuralları nasıl yazılır buna biir örnek
-
-            //if (CheckIfProductCountOfCategoryCorrect(product.CategoryId).Success)
-            //{
-            //    if (CheckIfProductNameExists(product.ProductName).Success)
-            //    {
-            //        _productDal.Add(product);
-
-            //        return new SuccessResult(Messages.ProductAdded);
-            //    }
-            //}
-            //return new ErrorResult();
-
-            //--------------------------------------------------------------------------------
-            //business rules olarak IRESULT şeklinde gönderim yapıldığı zaman bu şekilde 6.durum
-            //---------------------------------------------------------------------------------
-            //bunun avantajı yarın yeni kural geldi eklemek kolay olur  
-
             IResult result = BusinessRules.Run(CheckIfProductCountOfCategoryCorrect(product.CategoryId), CheckIfProductNameExists(product.ProductName)
                 ,CheckIfCategoryLimitExceded());
 
@@ -102,7 +56,7 @@ namespace Business.Concrete
         public IDataResult<List<Product>> GetAll()
         {
 
-            if (DateTime.Now.Hour==23)
+            if (DateTime.Now.Hour==13)
             {
                 return new ErrorDataResult<List<Product>>(Messages.MaintenanceTime);
 
@@ -138,7 +92,7 @@ namespace Business.Concrete
         }
 
         //[ValidationAspect(typeof(ProductValidator))]
-        //[CacheRemoveAspect("IProductService.Get")]
+        [CacheRemoveAspect("IProductService.Get")]
         public IResult Update(Product product)
         {
             //IResult result = BusinessRules.Run(CheckIfProductCountOfCategoryCorrect(product.CategoryId));
@@ -195,6 +149,13 @@ namespace Business.Concrete
             }
             Add(product);
             return null;
+        }
+
+        public IResult Delete(Product product)
+        {
+            _productDal.Delete(product);
+
+            return new SuccessResult(Messages.ProductDeleted);
         }
     }
 }
